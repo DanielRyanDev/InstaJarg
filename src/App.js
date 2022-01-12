@@ -1,43 +1,51 @@
 import React, { useState, useEffect } from "react";
 import './App.css';
-import { Search } from "./components/searchUser";
+import { Login } from "./components/login";
+import { signUpFetch } from "./utils";
 
 const App = () => {
-  const [search, setSearch] = useState();
-  const [searchResult, setSearchResult] = useState();
-  const [arr, setArr] = useState([]);
-  
-  const submitHandler = (e) => {
-    e.preventDefault();
-    setSearchResult(search);
-  }
-  
-  useEffect(() => {
-    fetchReq();
-  }, [search])
+  const [user, setUser] = useState();
+  const [username, setUsername] = useState();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
 
-  const fetchReq = async () => {
-    const response = await fetch("https://picsum.photos/v2/list");
-    const data = await response.json();
-    setArr(data);
+  const signUpHandler = async (e) => {
+    e.preventDefault();
+    const returnValue = await signUpFetch(username, email, password);
+    console.log(returnValue.user.username)
   }
 
   return (
     <div className="App">
-      <h1>InstaJarg</h1>
-      <h2>{search}</h2>
-      {searchResult && <h3>Cannot find {search}. Are you sure you are spelling their name correctly?</h3>}
-      <Search setter={setSearch} handler={submitHandler} />
-      {arr.map((item, i) => {
-        return(
-          <div>
-            <p key={i}>{item.author}</p>
-            <img className="imgFeed" src={item.download_url} alt="Random Img"/>
-          </div>
-        )
-      })}
+      <h1>{user}</h1>
+      {!user ? (
+        <form onSubmit={signUpHandler}>
+          <input onChange={(e) => setUsername(e.target.value)} placeholder="Username"/>
+          <input onChange={(e) => setEmail(e.target.value)} placeholder="Email"/>
+          <input onChange={(e) => setPassword(e.target.value)} placeholder="Password"/>
+        <button type="submit">Submit</button>
+      </form>
+      ) : ( <h2>Logged in.</h2>
+      )}
     </div>
   );
-}
+  };
+//   return (
+//     <div className="App">
+//       <h1>InstaJarg</h1>
+//       <h2>{user}</h2>
+//       {searchResult && <h3>Cannot find {search}. Are you sure you are spelling their name correctly?</h3>}
+//       <Search setter={setSearch} handler={submitHandler} />
+//       {arr.map((item, i) => {
+//         return(
+//           <div>
+//             <p key={i}>{item.author}</p>
+//             <img className="imgFeed" src={item.download_url} alt="Random Img"/>
+//           </div>
+//         )
+//       })}
+//     </div>
+//   );
+// }
 
 export default App;
